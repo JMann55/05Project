@@ -14,7 +14,16 @@
 
 // Load tasks and nextId from localStorage (or use defaults)
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-let nextId = JSON.parse(localStorage.getItem('nextId')) || []; // {"0": "000", "1": "454", "3": "218"}
+let idArray = JSON.parse(localStorage.getItem('nextId')) || []; // {"0": "000", "1": "454", "3": "218"}
+let nxtNt = []
+let rnCounter = 0
+
+let currentlyAdding = false
+
+idArray.forEach((note) => {
+    nxtNt.push(note)
+    rnCounter++
+});
 
 // Utility to save tasks + nextId
 function saveState() {
@@ -22,7 +31,7 @@ function saveState() {
     will up add nw data to local storage */
     localStorage.setItem('tasks', JSON.stringify(tasks)); 
     
-    localStorage.setItem('nextId', JSON.stringify(nextId)); // return an object of active notes
+    localStorage.setItem('nextId', JSON.stringify(idArray)); // return an object of active notes
                                                             // {0: 123, 1: 265...}
 }                                        
 
@@ -31,7 +40,7 @@ function saveState() {
 // TODO: generateTaskId()
 // - Return a unique id
 // - Increment nextId and persist using saveState()
-function generateTaskId() {
+function generateTaskId(t) {
 
     // Group tasks by the hour from when they were recieved
     // Wrk hours  1->9
@@ -43,9 +52,18 @@ function generateTaskId() {
     //creat a random time between the work hours
     // Work hours: 9am - 5pm 
 
+
+
+
+
     //nextID is an object
     //{0: note#, 1: nwNote#}
-    let numOfTickets = nextId.length;
+    let numOfTickets = idArray.length;
+
+
+    //Dont create an ntNum or append to idArray
+
+
 
     // Your code here
     // new note #
@@ -58,20 +76,49 @@ function generateTaskId() {
         console.log(ntNum)
     }while(chkIfNtNumEx(ntNum)==true)
     
+    let tArray = []
+    if(t){
+        tArray = [t.title, t.timestamp, t.desc]
+    }else{
+        tArray = ["", "", ""]
+    }
+    
+
+        
+    const isTicketThere = function(taskArray){
+        taskArray.every((td) => {
+            td!="";
+            td!=undefined;
+            
+        })
+
+        return taskArray
+    }
+
+
+
+
+
+    
     //get last ticket index available
     if(numOfTickets===0){
         //Allows to assign 1st ticket
         let lastInd = 1
-        nextId[0] = ntNum
+        idArray[0] = ntNum
+        
     
-    }else{
+    }else if(t==undefined && currentlyAdding==true){
         //A ticket has already been assigned ? <y>/n
         //num of ticket creations needs to increase
-        nextId.push(ntNum)
+        //console.log("I pushed")
+        idArray.push(ntNum)
+      
        
     }
-   
-    saveState();
+    
+
+    
+    return ntNum;
     // //let ticketIndex = 0;
     // let oldNtNum = 
     // let newNoteRec = {
@@ -81,7 +128,6 @@ function generateTaskId() {
     
 
 }
-
 // TODO: createTaskCard(task)
 // - Return a jQuery element representing a task card
 // - Include:
@@ -91,29 +137,31 @@ function generateTaskId() {
 //   - Delete button
 // - Add a data-task-id attribute for later lookups
 
-
-
 function chkIfNtNumEx(num){
     
-    let numOfTickets = nextId.length
-    
+    let numOfTickets = idArray.length ? idArray.length-1: ""
+    //console.log(numOfTickets)
     // get last num
-    console.log(`new ids - ${nextId}`)
-    console.log(`last num - ${nextId[numOfTickets-1]}`)
+    //console.log(`new ids - ${idArray}`)
+    //console.log(`last num - ${idArray[numofTickets ? numOfTickets-1: ""]}`)
 
-    let isIn = nextId.includes(num);
+    let isIn = idArray.includes(num);
     
-    //go thru numbes in nextId see if 
+    //go thru numbes in idArray see if 
     //new generated number equals any 
     //number already saved
 
 
     return isIn
-    // let tickets = nextId.getItem(nextId.key())
-    // nextId.getItem(String(nextId.key()))
+    // let tickets = idArray.getItem(nextId.key())
+    // idArray.getItem(String(nextId.key()))
 }
 
-
+function clearForm(){
+    $('input[id="taskTitle"]').val('')
+    $('input[id="taskDueDate"]').val('')
+    $('textarea[id="taskDescription"]').val('')
+}
 
 
 // - Use Day.js to color-code:
@@ -122,27 +170,156 @@ function chkIfNtNumEx(num){
 //     - Add an overdue style if past due
 
 function createTaskCard(task) {
+    //clearForm()
     // Your code here
     /*
     Gather details from the new task modal
     */
-    let titleField = $('input[id="taskTitle"]').val()
-    let tskDueDateField = $('input[id="taskDueDate"]').val()
-    let tskDesc = $('textarea[id="taskDescription"]').val()
+   let chk = idArray.length;
+    let titleField; 
+    let tskDueDateField;
+    let tskDesc;
+
+    
+    //represents a object that contains
+    //{title: "", timestamp: "", desc: ""...}   
+    //console.log(`task - ${task.keys}`)
+
+    if(task){   
+
+        titleField = task.title
+        tskDueDateField = task.timestamp
+        tskDesc = task.desc
+        if(titleField && tskDueDateField && tskDesc){
+            console.log("refresh")// site is refreshing
+        }
+    }else{
+        
+        titleField = $('input[id="taskTitle"]').val()
+        tskDueDateField = $('input[id="taskDueDate"]').val()
+        tskDesc = $('#taskDescription').val()
+    }
+
+
+    let $newL;
+    let $todoCard;
+    let tsk = {
+        title: "",
+        timestamp: "",
+        desc: ""
+    }
+
+
+
+
 
     //create a new list element with data
     // if taskStatus = todo 
     // put task info in todofield
-    $('#todo-cards').append('<ul>')
-    let newL = $('#todo-cards ul')
+    // $('#todo-cards').append('<ul>')
+
+   //if num of tickets idArray.length > 0
+   //create a div element that will hold 
+   //the note information of the 
+
+    let noteIDclass = `note-${idArray.length ? String(idArray.length) : "0" }`
+    //console.log(noteIDclass)
+    // if(idArray.length<1 || localStorage.length==0){    
+    //     console.log("empty")
+    //     $newL = $('<div>', {
+    //         id:    `note-${idArray.length+1}`, // needs to be a variable
+    //         class: 'card ',
+    //         width: '18rem',
+    //     });
+    // }else{
+    //     console.log("something is here")
+    //     let clLookup = "#"+noteIDclass
+    //     $newL = $(clLookup)
+    //     //We'll need to append to this element in
+    //     //the function below
+    // }
+    
+      $newL = $('<div>', {
+            id:    `note-${idArray.length+1}`, // needs to be a variable
+            class: 'card ',
+            width: '18rem',
+        });
+   
+
+    // console.log(noteIDclass)
+    // console.log($newL)
     //console.log($('#todo-cards').children()[0])
-    newL.addClass('classCard')
+    //console.log(newL.html())
+    $newL.addClass('classCard')
+
+    
+
+
+    //This div-card will hold the note
+    //will need to differentiate the cards so
+    //that the createTaskCard method will not append
+    //to a ul that already has content
+    //let idCounter = 0       ...idCounter++
+    const $divCard = $('<div>', {
+        // id:    `note-${idArray.length+1}`, // needs to be a variable
+        class: 'card ',
+        width: '18rem',
+  });
+  
+    const $divCdHeader = $('<div>', {
+        class: 'crd-header'
+  });
+
+    const $divBody = $('<div>', {
+        class: 'card-body',
+    });
 
 
 
-    newL.append(`<li>${titleField}</li>`)
-    newL.append(`<li>${tskDueDateField}</li>`)
-    newL.append(`<li>${tskDesc}</li>`)
+    let ntHeader = "Note #" + generateTaskId(task);
+    $divCdHeader.append(`<h5 class="card-title" style="width: fit-content">${ntHeader}</h5>`)
+    $divCdHeader.append(`<h6 class="card-subtitle mb-2 text-muted card-datetime">${tskDueDateField}</h6>`)
+    
+    tsk.title = ntHeader;
+    tsk.timestamp = tskDueDateField;
+    tsk.desc = tskDesc;
+
+    $divBody.append($divCdHeader)
+    $divBody.append(`<p class="card-text">${tskDesc}</p>`)
+    $divCard.append($divBody)
+
+    
+    //saveState() was ran earlier in method
+    //array in lc storage has gained
+
+    $todoCard = $('#todo-cards');
+    
+    if(task==undefined && currentlyAdding==true){  // Creating first note after delting or starting
+        //grab to do card
+        
+        //console.log('first')
+        $newL.append($divCard)
+        $todoCard.append($newL)
+        tasks.push(tsk)
+    }else if(task!=undefined && currentlyAdding!=true){   // refreshing 
+        //console.log('second')
+        $newL.append($divCard)
+        // $newL.insertAfter($('#todo-cards ul'))
+        $todoCard.append($newL)
+        //tasks.push(tsk)
+    }else{
+
+    }
+    
+
+    //newL.append(`<li>${titleField}</li>`)
+    // newL.append(`<li>${tskDueDateField}</li>`)
+    // newL.append(`<li>${tskDesc}</li>`)
+    // console.log()
+    // console.log(`tasks - ${JSON.stringify(tasks)}`)
+    saveState();
+    clearForm()
+
 
 }
 
@@ -154,6 +331,22 @@ function createTaskCard(task) {
 // - After rendering, make task cards draggable with jQuery UI
 function renderTaskList() {
     // Your code here
+    let rndrAmt = idArray.length;
+   
+
+    //add tenary that will determine if rncounter should increase
+    //const ifTicMd = rnCounter===idArray.length ? 
+   //createTaskCard()
+        console.log(`rnCounter - ${rnCounter}, idArrayLen - ${idArray.length}`)
+        //Get all stored tasks
+        for(let xx=0; xx<rndrAmt; xx++){
+            //console.log(tasks[xx])
+            
+            //  console.log("end")
+            createTaskCard(tasks[xx])
+
+        }
+     
 }
 
 // TODO: handleAddTask(event)
@@ -171,20 +364,28 @@ function handleAddTask(event) {
     // Your code here
     //last focus = document.activeElement
     event.preventDefault();
-    createTaskCard("p");
+    
+     rnCounter++
+    currentlyAdding = true
+    //createTaskCard({title: "Note #711", timestamp: "2026-09-11", desc: "This is a test"});
+    createTaskCard();
+
+
+
 
     //close modal
     //$('#taskModal').hide();
-    $('#taskModal').style.display = "none"
+    
     //document.activeElement.focus()
 }
 
-// TODO: handleDeleteTask(event)
+// TODO: handleDeleteTask(event)./;/
 // - Get the task id from the clicked button (data-task-id)
 // - Remove that task from tasks array
 // - Save and re-render
 function handleDeleteTask(event) {
     // Your code here
+    rnCounter = 0
     localStorage.clear();
 
 
@@ -227,11 +428,10 @@ $(function () {
         // drop: handleDrop,
     });
 
-    //what is stringify
-    
+    $('#resetButton').on('click', handleDeleteTask)
 
-
-    generateTaskId();
+    console.log("main running")
+    //generateTaskId();
     //chkIfNtNumEx();
     //handleDeleteTask();
     //createTaskCard("p")

@@ -54,6 +54,18 @@
             Organize your work by status, deadline, and priority.
           </p>
         </div>
+
+         <div class="text-md-end">
+          <p id="current-date" class="small text-muted mb-1"></p>
+          <button
+            id="resetButton"
+            class="btn btn-danger"
+          >
+            Reset
+          </button>
+        </div>
+
+
         <div class="text-md-end">
           <p id="current-date" class="small text-muted mb-1"></p>
           <button
@@ -75,7 +87,7 @@
             <div class="card-header bg-white">
               <h2 class="h5 mb-0 card-headers-text">To Do</h2>
             </div>
-            <div class="card-body lane-body" id="todo-cards"></div>
+            <div class="card-body lane-body" data-lstNote="" id="todo-cards"></div>
           </div>
         </section>
 
@@ -170,7 +182,13 @@
               </div>
 
               <div class="text-end">
-                <button type="submit" class="btn btn-success">Save Task</button>
+                <button 
+                  type="submit"
+                  class="btn btn-success"
+                  data-bs-dismiss="modal"
+                  >
+                  Save Task
+                </button>
               </div>
             </form>
           </div>

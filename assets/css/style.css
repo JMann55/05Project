@@ -138,3 +138,21 @@ body {
 .classCard{
   
 }
+
+.card-datetime {
+  /* position: relative;
+  justify-self: end; */
+  width: fit-content;
+  /* align-self: flex-start; */
+
+  /* margin-block-start: 1.67em;
+  margin-block-end: 1.67em; */
+}
+
+.crd-header{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  /* align-self: flex-start; */
+}
