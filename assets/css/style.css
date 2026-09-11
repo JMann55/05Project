@@ -55,7 +55,7 @@ body {
 .lane {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  /* overflow: hidden; */
   display: flex;
   flex-direction: column;
   background-color: var(--card-bg);
@@ -135,8 +135,8 @@ body {
   font-size: 2.25rem;
 }
 
-.classCard{
-  
+.div-card{
+  margin-top: 10px;
 }
 
 .card-datetime {
@@ -149,10 +149,24 @@ body {
   margin-block-end: 1.67em; */
 }
 
+ul li{
+border: none !important;
+}
+
 .crd-header{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: nowrap;
   /* align-self: flex-start; */
+}
+
+#todo-list, #prg-list, #dne-list{
+  list-style: none;
+  height: 100%;
+
+}
+
+.card-body{
+  padding-top: 10px;
 }

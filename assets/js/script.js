@@ -239,13 +239,16 @@ function createTaskCard(task) {
     //     //the function below
     // }
     
-      $newL = $('<div>', {
+      $newL = $('<li>', {
             id:    `note-${idArray.length+1}`, // needs to be a variable
+            // id:'todo-ul-list',
             class: 'card ',
             width: '18rem',
+            style: 'margin-top: 10px',
         });
    
-
+  
+    //$('#lane-todo').disableSelection();
     // console.log(noteIDclass)
     // console.log($newL)
     //console.log($('#todo-cards').children()[0])
@@ -262,6 +265,7 @@ function createTaskCard(task) {
     //let idCounter = 0       ...idCounter++
     const $divCard = $('<div>', {
         // id:    `note-${idArray.length+1}`, // needs to be a variable
+        // id:'todo-ul-list',
         class: 'card ',
         width: '18rem',
   });
@@ -271,6 +275,7 @@ function createTaskCard(task) {
   });
 
     const $divBody = $('<div>', {
+       
         class: 'card-body',
     });
 
@@ -285,14 +290,15 @@ function createTaskCard(task) {
     tsk.desc = tskDesc;
 
     $divBody.append($divCdHeader)
-    $divBody.append(`<p class="card-text">${tskDesc}</p>`)
+    $divBody.append(`<p class="card-text ">${tskDesc}</p>`)
     $divCard.append($divBody)
 
     
     //saveState() was ran earlier in method
     //array in lc storage has gained
 
-    $todoCard = $('#todo-cards');
+    $todoCard = $('#todo-list');
+    $progressCard = $('#prg-list');
     
     if(task==undefined && currentlyAdding==true){  // Creating first note after delting or starting
         //grab to do card
@@ -300,6 +306,7 @@ function createTaskCard(task) {
         //console.log('first')
         $newL.append($divCard)
         $todoCard.append($newL)
+    
         tasks.push(tsk)
     }else if(task!=undefined && currentlyAdding!=true){   // refreshing 
         //console.log('second')
@@ -387,16 +394,20 @@ function handleDeleteTask(event) {
     // Your code here
     rnCounter = 0
     localStorage.clear();
-
+    
 
 }
 
 // TODO: handleDrop(event, ui)
 // - Get the task id from the dragged card
 // - Determine the new status from the lane's dataset/status or id
-// - Update the task's status in the tasks arraydj
+// - Update the task's status in the tasks array
 // - Save and re-render
 function handleDrop(event, ui) {
+
+    let targetEl = event.target
+    console.log(targetEl.val() ,ui)
+
     // Your code here
 }
 
@@ -421,16 +432,33 @@ $(function () {
     // Form submit handler
     $('#taskForm').on('submit', handleAddTask);
 
+    console.log("main running")
+    
+    //$('.classCard').draggable();
+    
+    $('#resetButton').on('click', handleDeleteTask)
+    
     // Make lanes droppable
     // TODO: configure droppable to accept task cards and use handleDrop
-    $('.lane-body').droppable({
-        // accept: '.task-card',
-        // drop: handleDrop,
+    $('.connectedSortable').sortable({
+        connectWith: ".connectedSortable",
+       // accept: '.card-body',
+        //drop: handleDrop,
+        placeholder: "ui-state-highlight",
+        
+        //grid: [5, 5],
+    }).disableSelection();
+
+    $("#prg-list").on("sortreceive", function(event, ui) {
+    const receivedItemText = ui.item.text();
+    const sourceListId = ui.sender.attr("id");
+    const itemId = ui.item.data("id");
+
+    console.log(`receivedItemText - ${receivedItemText}`)
+    console.log(`sourceListId - ${sourceListId}`)
+    console.log(`itemId - ${itemId}`)
     });
 
-    $('#resetButton').on('click', handleDeleteTask)
-
-    console.log("main running")
     //generateTaskId();
     //chkIfNtNumEx();
     //handleDeleteTask();

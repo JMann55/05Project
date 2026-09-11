@@ -83,11 +83,13 @@
       <div class="row g-3 swimlanes">
         <!-- To Do -->
         <section class="col-12 col-lg-4 d-flex">
-          <div id="lane-todo" class="lane card flex-grow-1" data-status="to-do">
-            <div class="card-header bg-white">
-              <h2 class="h5 mb-0 card-headers-text">To Do</h2>
-            </div>
-            <div class="card-body lane-body" data-lstNote="" id="todo-cards"></div>
+          <div id="lane-todo" class="llane-todo lane card flex-grow-1" data-status="to-do">
+          <div class="card-header bg-white">
+            <h2 class="h5 mb-0 card-headers-text">To Do</h2>
+          </div>
+            <ul id="todo-list" class="connectedSortable" style="overflow: hidden;">
+            
+            </ul>
           </div>
         </section>
 
@@ -101,7 +103,10 @@
             <div class="card-header bg-white">
               <h2 class="h5 mb-0 card-headers-text">In Progress</h2>
             </div>
-            <div class="card-body lane-body" id="in-progress-cards"></div>
+            <!-- <div class="card-body lane-body" id="in-progress-cards" style="overflow: hidden;"></div> -->
+            <ul id="prg-list" class="connectedSortable">
+            
+            </ul>
           </div>
         </section>
 
@@ -111,7 +116,10 @@
             <div class="card-header bg-white">
               <h2 class="h5 mb-0 card-headers-text">Done</h2>
             </div>
-            <div class="card-body lane-body" id="done-cards"></div>
+            <!-- <div class="card-body lane-body" id="done-cards"></div> -->
+              <ul id="dne-list" class="connectedSortable">
+            
+            </ul>
           </div>
         </section>
       </div>
