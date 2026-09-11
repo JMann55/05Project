@@ -104,21 +104,21 @@ function generateTaskId(t) {
     if(numOfTickets===0){
         //Allows to assign 1st ticket
         let lastInd = 1
-        idArray[0] = ntNum
+        idArray[0] = numOfTickets+1
         
     
     }else if(t==undefined && currentlyAdding==true){
         //A ticket has already been assigned ? <y>/n
         //num of ticket creations needs to increase
         //console.log("I pushed")
-        idArray.push(ntNum)
+        idArray.push(numOfTickets+1)
       
        
     }
     
 
     
-    return ntNum;
+    return idArray[numOfTickets-1];
     // //let ticketIndex = 0;
     // let oldNtNum = 
     // let newNoteRec = {
@@ -285,7 +285,7 @@ function createTaskCard(task) {
     $divCdHeader.append(`<h5 class="card-title" style="width: fit-content">${ntHeader}</h5>`)
     $divCdHeader.append(`<h6 class="card-subtitle mb-2 text-muted card-datetime">${tskDueDateField}</h6>`)
     
-    tsk.title = ntHeader;
+    tsk.title = $newL.id;
     tsk.timestamp = tskDueDateField;
     tsk.desc = tskDesc;
 
