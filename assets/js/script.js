@@ -51,10 +51,13 @@ function generateTaskId(t) {
     //if current time is outside of 9am-5pm
     //creat a random time between the work hours
     // Work hours: 9am - 5pm 
+    if(t){
+        const ind = tasks.indexOf(t)
+        return idArray[ind]
+    }
 
-
-
-
+  
+    
 
     //nextID is an object
     //{0: note#, 1: nwNote#}
@@ -114,11 +117,16 @@ function generateTaskId(t) {
         idArray.push(numOfTickets+1)
       
        
+    }else if(t!=undefined && currentlyAdding==false){
+        // return t.
+        
+        //Leave idArray alone
+
     }
     
 
-    
-    return idArray[numOfTickets-1];
+    t.noteNum = "Note# " + String(idArray[numOfTickets]); 
+    return idArray[numOfTickets];
     // //let ticketIndex = 0;
     // let oldNtNum = 
     // let newNoteRec = {
@@ -163,54 +171,28 @@ function clearForm(){
     $('textarea[id="taskDescription"]').val('')
 }
 
-
-// - Use Day.js to color-code:
-//   - If task is not in "done":
-//     - Add a warning style if due soon / today
-//     - Add an overdue style if past due
-
-function createTaskCard(task) {
-    //clearForm()
-    // Your code here
-    /*
-    Gather details from the new task modal
-    */
-   let chk = idArray.length;
-    let titleField; 
-    let tskDueDateField;
-    let tskDesc;
-
+function appendCards(taskInMemory){
     
-    //represents a object that contains
-    //{title: "", timestamp: "", desc: ""...}   
-    //console.log(`task - ${task.keys}`)
-
-    if(task){   
-
-        titleField = task.title
-        tskDueDateField = task.timestamp
-        tskDesc = task.desc
-        if(titleField && tskDueDateField && tskDesc){
-            console.log("refresh")// site is refreshing
-        }
-    }else{
-        
-        titleField = $('input[id="taskTitle"]').val()
-        tskDueDateField = $('input[id="taskDueDate"]').val()
-        tskDesc = $('#taskDescription').val()
-    }
-
 
     let $newL;
     let $todoCard;
     let tsk = {
         title: "",
         timestamp: "",
-        desc: ""
+        desc: "",
+        noteNum: ""
     }
 
 
-
+    
+        const $divCard = $('<div>', {
+        // id:    `note-${idArray.length+1}`, // needs to be a variable
+        // id:'todo-ul-list',
+        class: 'card ',
+        width: '18rem',
+        'data-taskState': ''
+        
+  });
 
 
     //create a new list element with data
@@ -239,13 +221,7 @@ function createTaskCard(task) {
     //     //the function below
     // }
     
-      $newL = $('<li>', {
-            id:    `note-${idArray.length+1}`, // needs to be a variable
-            // id:'todo-ul-list',
-            class: 'card ',
-            width: '18rem',
-            style: 'margin-top: 10px',
-        });
+
    
   
     //$('#lane-todo').disableSelection();
@@ -253,7 +229,7 @@ function createTaskCard(task) {
     // console.log($newL)
     //console.log($('#todo-cards').children()[0])
     //console.log(newL.html())
-    $newL.addClass('classCard')
+    
 
     
 
@@ -263,14 +239,9 @@ function createTaskCard(task) {
     //that the createTaskCard method will not append
     //to a ul that already has content
     //let idCounter = 0       ...idCounter++
-    const $divCard = $('<div>', {
-        // id:    `note-${idArray.length+1}`, // needs to be a variable
-        // id:'todo-ul-list',
-        class: 'card ',
-        width: '18rem',
-  });
+
   
-    const $divCdHeader = $('<div>', {
+    const $divCdHeader = $('<div>', { 
         class: 'crd-header'
   });
 
@@ -279,19 +250,123 @@ function createTaskCard(task) {
         class: 'card-body',
     });
 
+    let titleField = $('input[id="taskTitle"]').val()
+    let tskDueDateField = $('input[id="taskDueDate"]').val()
+    let tskDesc = $('#taskDescription').val()
+    let ntHeader = ""
 
 
-    let ntHeader = "Note #" + generateTaskId(task);
-    $divCdHeader.append(`<h5 class="card-title" style="width: fit-content">${ntHeader}</h5>`)
-    $divCdHeader.append(`<h6 class="card-subtitle mb-2 text-muted card-datetime">${tskDueDateField}</h6>`)
+    //Getting same note # or creating a new note #
+    let ccounter =0;
+    if(taskInMemory){
+        tasks.forEach(function(){
+            // let x = y.values()
+            if(taskInMemory.notenumber==tasks[ccounter].notenumber){
+                tsk.title = taskInMemory.notenumber
+            }
+
+            // rnConter = x.indexOf(taskInMemory);
+            // ntHeader = "Note #" + rnCounter
+            ccounter++
+        });
+        // let ccounter = 0;
+        // tasks.forEach(function(ttask){
+        //     if(ttask==tasks[ccounter].notenumber)
+        //     ccounter++
+        // })
+     
+        
+        //tsk.title = taskInMemory.titleField;
+        tsk.timestamp = taskInMemory.tskDueDateField;
+        tsk.desc = taskInMemory.tskDesc;
+
+    }else{
+        ntHeader = "Note #" + rnCounter;
+        tsk.title = ntHeader;
+        tsk.timestamp = tskDueDateField;
+        tsk.desc = tskDesc;
+       
+    }
+
+
+
+   
+
+
+
+
+    //let ntHeader = "Note #" + generateTaskId(taskInMemory);
+    $divCdHeader.append(`<h5 class="card-title" style="width: fit-content">${tsk.title}</h5>`)
+    $divCdHeader.append(`<h6 class="card-subtitle mb-2 text-muted card-datetime">${tsk.timestamp}</h6>`)
     
-    tsk.title = $newL.id;
-    tsk.timestamp = tskDueDateField;
-    tsk.desc = tskDesc;
 
     $divBody.append($divCdHeader)
-    $divBody.append(`<p class="card-text ">${tskDesc}</p>`)
+    $divBody.append(`<p class="card-text ">${tsk.desc}</p>`)
     $divCard.append($divBody)
+    return $divCard
+    
+}
+
+
+
+// - Use Day.js to color-code:
+//   - If task is not in "done":
+//     - Add a warning style if due soon / today
+//     - Add an overdue style if past due
+
+function createTaskCard(task) {
+    //clearForm()
+    // Your code here
+    /*
+    Gather details from the new task modal
+    */
+   let chk = idArray.length;
+    let titleField; 
+    let tskDueDateField;
+    let tskDesc;
+    let $cardToShow;
+    let notenumber;
+
+    $newL = $('<li>', {
+        id:    `note-${idArray.length+1}`, // needs to be a variable
+        // id:'todo-ul-list',
+        class: 'card ',
+        width: '18rem',
+        style: 'margin-top: 10px',
+        
+    });
+
+
+
+    //represents a object that contains
+    //{title: "", timestamp: "", desc: ""...}   
+    //console.log(`task - ${task.keys}`)
+
+    if(task){   
+
+        titleField = task.title
+        tskDueDateField = task.timestamp
+        tskDesc = task.desc
+
+        $cardToShow = appendCards(task)
+
+
+
+        if(titleField && tskDueDateField && tskDesc){
+            console.log("refresh")// site is refreshing
+        }
+        
+    }else{
+        
+        titleField = $('input[id="taskTitle"]').val()
+        tskDueDateField = $('input[id="taskDueDate"]').val()
+        tskDesc = $('#taskDescription').val()
+        notenumber = "Note# " + String(chk+1)
+
+
+        $cardToShow = appendCards()
+    }
+
 
     
     //saveState() was ran earlier in method
@@ -299,26 +374,52 @@ function createTaskCard(task) {
 
     $todoCard = $('#todo-list');
     $progressCard = $('#prg-list');
+    $doneCard = $('#dne-list');
+   
     
     if(task==undefined && currentlyAdding==true){  // Creating first note after delting or starting
         //grab to do card
-        
+        let todoState = "Todo"
+        idArray.push(rnCounter)
         //console.log('first')
-        $newL.append($divCard)
+        $newL.append($cardToShow)
         $todoCard.append($newL)
     
-        tasks.push(tsk)
+        tasks.push({titleField, tskDueDateField, tskDesc, notenumber, taskState: todoState})
     }else if(task!=undefined && currentlyAdding!=true){   // refreshing 
-        //console.log('second')
-        $newL.append($divCard)
+        //console.log('second')+
+        let targetNumber = task.notenumber.split("#")[1]
+
+        // go thru ul find this child
+        //$('')
+        let targetChild;
+        let verfiedState = task.taskState
+
+        $newL.append($cardToShow)
         // $newL.insertAfter($('#todo-cards ul'))
-        $todoCard.append($newL)
+        //$todoCard.append($newL)
         //tasks.push(tsk)
+        //idArray.push(rnCounter)
+
+        switch(verfiedState){
+            case "Todo":
+                $todoCard.append($newL)
+                break;
+            case "InProgress":
+                             
+                $progressCard.append($newL)
+                break;
+            case "Done":
+                $doneCard.append($newL)
+                break;
+        }
+
+        
     }else{
-
+        
     }
+    $todoCard.append($newL)
     
-
     //newL.append(`<li>${titleField}</li>`)
     // newL.append(`<li>${tskDueDateField}</li>`)
     // newL.append(`<li>${tskDesc}</li>`)
@@ -406,7 +507,8 @@ function handleDeleteTask(event) {
 function handleDrop(event, ui) {
 
     let targetEl = event.target
-    console.log(targetEl.val() ,ui)
+
+    console.log(targetEl.getAttribute('taskState'))
 
     // Your code here
 }
@@ -443,20 +545,17 @@ $(function () {
     $('.connectedSortable').sortable({
         connectWith: ".connectedSortable",
        // accept: '.card-body',
-        //drop: handleDrop,
+        drop: handleDrop,
         placeholder: "ui-state-highlight",
         
         //grid: [5, 5],
     }).disableSelection();
 
     $("#prg-list").on("sortreceive", function(event, ui) {
-    const receivedItemText = ui.item.text();
-    const sourceListId = ui.sender.attr("id");
-    const itemId = ui.item.data("id");
-
-    console.log(`receivedItemText - ${receivedItemText}`)
-    console.log(`sourceListId - ${sourceListId}`)
-    console.log(`itemId - ${itemId}`)
+        let targetEl = event.target
+        console.log(targetEl.children[0].children[0])
+        //targetEl.attr('data-taskState', 'InProgress')
+       //renderTaskList()
     });
 
     //generateTaskId();
