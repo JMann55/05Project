@@ -171,6 +171,14 @@ function clearForm(){
     $('textarea[id="taskDescription"]').val('')
 }
 
+function getNum(stringNoteID){
+
+    let last = stringNoteID.split('-')[1]
+    return last
+
+
+}
+
 function appendCards(taskInMemory){
     
 
@@ -180,7 +188,8 @@ function appendCards(taskInMemory){
         title: "",
         timestamp: "",
         desc: "",
-        noteNum: ""
+        noteNum: "",
+        state: ""
     }
 
 
@@ -263,6 +272,7 @@ function appendCards(taskInMemory){
             // let x = y.values()
             if(taskInMemory.notenumber==tasks[ccounter].notenumber){
                 tsk.title = taskInMemory.notenumber
+                tsk.state = taskInMemory.taskState
             }
 
             // rnConter = x.indexOf(taskInMemory);
@@ -320,15 +330,16 @@ function createTaskCard(task) {
     /*
     Gather details from the new task modal
     */
-   let chk = idArray.length;
+    let chk = idArray.length;
     let titleField; 
     let tskDueDateField;
     let tskDesc;
     let $cardToShow;
     let notenumber;
 
+
     $newL = $('<li>', {
-        id:    `note-${idArray.length+1}`, // needs to be a variable
+        id:    'Note# 0', // needs to be a variable
         // id:'todo-ul-list',
         class: 'card ',
         width: '18rem',
@@ -343,10 +354,10 @@ function createTaskCard(task) {
     //console.log(`task - ${task.keys}`)
 
     if(task){   
-
-        titleField = task.title
-        tskDueDateField = task.timestamp
-        tskDesc = task.desc
+        
+        titleField = task.notenumber
+        tskDueDateField = task.tskDueDateField
+        tskDesc = task.tskDesc
 
         $cardToShow = appendCards(task)
 
@@ -357,7 +368,7 @@ function createTaskCard(task) {
         }
         
     }else{
-        
+       
         titleField = $('input[id="taskTitle"]').val()
         tskDueDateField = $('input[id="taskDueDate"]').val()
         tskDesc = $('#taskDescription').val()
@@ -378,6 +389,7 @@ function createTaskCard(task) {
    
     
     if(task==undefined && currentlyAdding==true){  // Creating first note after delting or starting
+        $newL.attr("id", `Note# ${chk+1}`) 
         //grab to do card
         let todoState = "Todo"
         idArray.push(rnCounter)
@@ -387,7 +399,8 @@ function createTaskCard(task) {
     
         tasks.push({titleField, tskDueDateField, tskDesc, notenumber, taskState: todoState})
     }else if(task!=undefined && currentlyAdding!=true){   // refreshing 
-        //console.log('second')+
+        //console.log('second')
+        $newL.attr("id", task.notenumber)
         let targetNumber = task.notenumber.split("#")[1]
 
         // go thru ul find this child
@@ -418,7 +431,7 @@ function createTaskCard(task) {
     }else{
         
     }
-    $todoCard.append($newL)
+    //$todoCard.append($newL)
     
     //newL.append(`<li>${titleField}</li>`)
     // newL.append(`<li>${tskDueDateField}</li>`)
@@ -473,10 +486,10 @@ function handleAddTask(event) {
     //last focus = document.activeElement
     event.preventDefault();
     
-     rnCounter++
+    rnCounter++
     currentlyAdding = true
     //createTaskCard({title: "Note #711", timestamp: "2026-09-11", desc: "This is a test"});
-    createTaskCard();
+   createTaskCard()
 
 
 
@@ -511,6 +524,11 @@ function handleDrop(event, ui) {
     console.log(targetEl.getAttribute('taskState'))
 
     // Your code here
+    console.log(targetEl.children())
+    //find div element with 
+    //h5 element
+ 
+
 }
 
 // ===== Document Ready =====
@@ -552,12 +570,110 @@ $(function () {
     }).disableSelection();
 
     $("#prg-list").on("sortreceive", function(event, ui) {
+        let targetTask;
         let targetEl = event.target
-        console.log(targetEl.children[0].children[0])
+
+     
+    
+
+        console.log()
         //targetEl.attr('data-taskState', 'InProgress')
+        // const targetID = targetEl.children[0].getAttribute("id")
+
+
+
+        const targetID = ui.item[0].getAttribute("id")
+        // let plcInLst = targetID.split('# ')[1]
+        // if(plcInLst<idArray.length){
+        //     targetID = "Note# "+ plcInLst
+        // }else{
+
+        // }
+        //associate target element witht the task
+        //get id name
        //renderTaskList()
+        for(let tCnt=0; tCnt<tasks.length; tCnt++){
+            if(tasks[tCnt].notenumber==targetID){
+                targetTask = tasks[tCnt]
+
+                targetTask.taskState = "InProgress"
+                console.log("gotcha")
+            }else{
+                console.log(targetID)
+            }
+        }
+
+
+        //renderTaskList()
+        saveState()
     });
 
+
+    $("#dne-list").on("sortreceive", function(event, ui) {
+        let targetTask;
+        let targetEl = event.target
+
+     
+    
+
+        console.log()
+        //targetEl.attr('data-taskState', 'InProgress')
+        // const targetID = targetEl.children[0].getAttribute("id")
+        const targetID = $('#dne-list li:last').attr('id')
+        //associate target element witht the task
+        //get id name
+       //renderTaskList()
+        for(let tCnt=0; tCnt<tasks.length; tCnt++){
+            if(tasks[tCnt].notenumber==targetID){
+                targetTask = tasks[tCnt]
+
+                targetTask.taskState = "Done"
+
+                
+                console.log("gotcha")
+            }else{
+                console.log(targetID)
+            }
+        }
+
+
+        //renderTaskList()
+        saveState()
+    });
+
+
+    $("#todo-list").on("sortreceive", function(event, ui) {
+        let targetTask;
+        let targetEl = event.target
+
+     
+    
+
+        console.log()
+        //targetEl.attr('data-taskState', 'InProgress')
+        // const targetID = targetEl.children[0].getAttribute("id")
+        const targetID = $('#todo-list li:last').attr('id')
+        //associate target element witht the task
+        //get id name
+       //renderTaskList()
+        for(let tCnt=0; tCnt<tasks.length; tCnt++){
+            if(tasks[tCnt].notenumber==targetID){
+                targetTask = tasks[tCnt]
+
+                targetTask.taskState = "Todo"
+                console.log("gotcha")
+            }else{
+                console.log(targetID)
+            }
+        }
+
+
+        //renderTaskList()
+        saveState()
+    });
+
+
+    
     //generateTaskId();
     //chkIfNtNumEx();
     //handleDeleteTask();

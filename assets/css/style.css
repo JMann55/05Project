@@ -96,7 +96,7 @@ body {
   margin-bottom: 0.25rem;
 }
 
-.task-card-text {
+
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
@@ -150,7 +150,8 @@ body {
 }
 
 ul li{
-border: none !important;
+/* border: none !important; */
+width: fit-content
 }
 
 .crd-header{
@@ -164,9 +165,22 @@ border: none !important;
 #todo-list, #prg-list, #dne-list{
   list-style: none;
   height: 100%;
+  color-scheme: 'only dark';
 
 }
 
 .card-body{
   padding-top: 10px;
+}
+
+#dne-list li {
+    border: 4px green solid !important;
+}
+
+#todo-list li {
+    border: 4px yellow solid !important;
+}
+
+#prg-list li {
+    border: 4px blue solid !important;
 }
