@@ -172,7 +172,7 @@ width: fit-content
 .card-body{
   padding-top: 10px;
 }
-
+/* 
 #dne-list li {
     border: 4px green solid !important;
 }
@@ -182,5 +182,19 @@ width: fit-content
 }
 
 #prg-list li {
+    border: 4px blue solid !important;
+} */
+
+
+.late {
+  
+    border: 4px red solid !important;
+}
+
+.soon {
+    border: 4px yellow solid !important;
+}
+
+.todo {
     border: 4px blue solid !important;
 }

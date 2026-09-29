@@ -179,6 +179,23 @@ function getNum(stringNoteID){
 
 }
 
+function getDaysDifference(date2) {
+  // 1. Calculate time difference in milliseconds
+  const cdtOffsetMs = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+  const utcMilliseconds = Date.parse(date2) + cdtOffsetMs;
+  let newDay = new Date(utcMilliseconds)
+  let today = new Date();
+  today.setHours(0, 0, 0, 0)
+  newDay.setHours(0, 0, 0, 0)
+
+  const diffInMs = newDay.getTime() - today.getTime()
+  // 2. Divide by milliseconds in one day (1000ms * 60s * 60m * 24h)
+  const msInDay = 1000 * 60 * 60 * 24;
+  
+  // 3. Round down or to the nearest integer to handle fractional days (DST)
+  return Math.ceil(diffInMs / msInDay);
+}
+
 function appendCards(taskInMemory){
     
 
@@ -189,7 +206,8 @@ function appendCards(taskInMemory){
         timestamp: "",
         desc: "",
         noteNum: "",
-        state: ""
+        state: "",
+        note: ""
     }
 
 
@@ -204,10 +222,32 @@ function appendCards(taskInMemory){
   });
 
 
-    //create a new list element with data
-    // if taskStatus = todo 
-    // put task info in todofield
-    // $('#todo-cards').append('<ul>')
+
+
+
+
+    //if the taskInMemory's due date is
+    //within 2 days the card will be yellow
+
+    //if due date has passed
+    //card will be red
+
+    // otherwise blue
+
+    if(taskInMemory){
+            if(getDaysDifference(taskInMemory.tskDueDateField)<0){
+                $divCard.attr('class', 'late');
+            }else if(getDaysDifference(taskInMemory.tskDueDateField)<=2){
+                $divCard.attr('class', 'soon');
+            }else{
+                $divCard.attr('class', 'todo');
+            }
+
+    }else{
+
+    }
+
+
 
    //if num of tickets idArray.length > 0
    //create a div element that will hold 
@@ -259,7 +299,7 @@ function appendCards(taskInMemory){
         class: 'card-body',
     });
 
-    let titleField = $('input[id="taskTitle"]').val()
+    let tskTitleField = $('input[id="taskTitle"]').val()
     let tskDueDateField = $('input[id="taskDueDate"]').val()
     let tskDesc = $('#taskDescription').val()
     let ntHeader = ""
@@ -288,13 +328,15 @@ function appendCards(taskInMemory){
         
         //tsk.title = taskInMemory.titleField;
         tsk.timestamp = taskInMemory.tskDueDateField;
-        tsk.desc = taskInMemory.tskDesc;
+        tsk.desc = taskInMemory.titleField;
+        tsk.note = taskInMemory.tskDesc
 
     }else{
         ntHeader = "Note #" + rnCounter;
         tsk.title = ntHeader;
         tsk.timestamp = tskDueDateField;
-        tsk.desc = tskDesc;
+        tsk.desc = tskTitleField;
+        tsk.note = tskDesc
        
     }
 
@@ -312,6 +354,7 @@ function appendCards(taskInMemory){
 
     $divBody.append($divCdHeader)
     $divBody.append(`<p class="card-text ">${tsk.desc}</p>`)
+    $divBody.append(`<p class="card-text ">${tsk.note}</p>`)
     $divCard.append($divBody)
     return $divCard
     
@@ -387,13 +430,34 @@ function createTaskCard(task) {
     $progressCard = $('#prg-list');
     $doneCard = $('#dne-list');
    
-    
+    //give card the correct color 
+    //outline based on due date
+    //get task due date
+
+
+
     if(task==undefined && currentlyAdding==true){  // Creating first note after delting or starting
         $newL.attr("id", `Note# ${chk+1}`) 
         //grab to do card
         let todoState = "Todo"
         idArray.push(rnCounter)
         //console.log('first')
+
+        let centRalTime = new Date(Date.now()).toLocaleString('en-US', {
+            timeZone: 'America/Chicago'
+        })
+
+        let theCentRalTime = new Date(tskDueDateField).toLocaleString('en-US', {
+            timeZone: 'America/Chicago'
+        })
+
+        console.log(new Date(tskDueDateField))
+        //console.log(getDaysDifference(Date.parse(centRalTime), Date.parse(theCentRalTime)))
+        console.log(getDaysDifference(Date.parse(tskDueDateField)))
+        //console.log(Date.now())
+
+        
+
         $newL.append($cardToShow)
         $todoCard.append($newL)
     
@@ -413,6 +477,14 @@ function createTaskCard(task) {
         //$todoCard.append($newL)
         //tasks.push(tsk)
         //idArray.push(rnCounter)
+
+        
+        
+
+    // if taskStatus = todo 
+    // put task info in todofield
+    // $('#todo-cards').append('<ul>')
+
 
         switch(verfiedState){
             case "Todo":
