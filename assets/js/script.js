@@ -349,11 +349,11 @@ function appendCards(taskInMemory){
 
     //let ntHeader = "Note #" + generateTaskId(taskInMemory);
     $divCdHeader.append(`<h5 class="card-title" style="width: fit-content">${tsk.title}</h5>`)
-    $divCdHeader.append(`<h6 class="card-subtitle mb-2 text-muted card-datetime">${tsk.timestamp}</h6>`)
+    $divCdHeader.append(`<h6 class="card-subtitle mb-2 text-muted card-datetime">DUE: ${tsk.timestamp}</h6>`)
     
 
     $divBody.append($divCdHeader)
-    $divBody.append(`<p class="card-text ">${tsk.desc}</p>`)
+    $divBody.append(`<p class="card-hdr ">${tsk.desc}</p>`)
     $divBody.append(`<p class="card-text ">${tsk.note}</p>`)
     $divCard.append($divBody)
     return $divCard
@@ -435,6 +435,18 @@ function createTaskCard(task) {
     //get task due date
 
 
+    
+
+    const $delBtn = $('<button>', {
+        class: 'btn btn-danger btn-small delete-item-btn',
+        type: 'button',
+        text: 'x',
+        'aria-label': `Remove note`,
+    });
+
+
+
+
 
     if(task==undefined && currentlyAdding==true){  // Creating first note after delting or starting
         $newL.attr("id", `Note# ${chk+1}`) 
@@ -458,7 +470,7 @@ function createTaskCard(task) {
 
         
 
-        $newL.append($cardToShow)
+        $newL.append($cardToShow, $delBtn)
         $todoCard.append($newL)
     
         tasks.push({titleField, tskDueDateField, tskDesc, notenumber, taskState: todoState})
@@ -472,7 +484,11 @@ function createTaskCard(task) {
         let targetChild;
         let verfiedState = task.taskState
 
-        $newL.append($cardToShow)
+
+
+
+
+        $newL.append($cardToShow, $delBtn)
         // $newL.insertAfter($('#todo-cards ul'))
         //$todoCard.append($newL)
         //tasks.push(tsk)
@@ -584,6 +600,13 @@ function handleDeleteTask(event) {
 
 }
 
+
+function reset(event){
+    // Your code here
+    rnCounter = 0
+    localStorage.clear();
+}
+
 // TODO: handleDrop(event, ui)
 // - Get the task id from the dragged card
 // - Determine the new status from the lane's dataset/status or id
@@ -628,7 +651,7 @@ $(function () {
     
     //$('.classCard').draggable();
     
-    $('#resetButton').on('click', handleDeleteTask)
+    $('#resetButton').on('click', reset)
     
     // Make lanes droppable
     // TODO: configure droppable to accept task cards and use handleDrop
@@ -691,7 +714,7 @@ $(function () {
         console.log()
         //targetEl.attr('data-taskState', 'InProgress')
         // const targetID = targetEl.children[0].getAttribute("id")
-        const targetID = $('#dne-list li:last').attr('id')
+        const targetID = ui.item[0].getAttribute("id")
         //associate target element witht the task
         //get id name
        //renderTaskList()
@@ -717,14 +740,13 @@ $(function () {
     $("#todo-list").on("sortreceive", function(event, ui) {
         let targetTask;
         let targetEl = event.target
-
-     
+   
     
 
         console.log()
         //targetEl.attr('data-taskState', 'InProgress')
         // const targetID = targetEl.children[0].getAttribute("id")
-        const targetID = $('#todo-list li:last').attr('id')
+        const targetID = ui.item[0].getAttribute("id")
         //associate target element witht the task
         //get id name
        //renderTaskList()
@@ -739,12 +761,32 @@ $(function () {
             }
         }
 
-
+    
         //renderTaskList()
         saveState()
     });
 
+    $('#todo-list').on('click', '.delete-item-btn', function (e){
+        e.preventDefault()
+        const target = e.target.offsetParent;
+        const targetID = target.id;
+        for(let tCnt=0; tCnt<tasks.length; tCnt++){
+            if(tasks[tCnt].notenumber==targetID){
+                targetTask = tasks[tCnt]
 
+                tasks.splice(tCnt, 1)
+                idArray.splice(tCnt, 1)
+                nxtNt.splice(tCnt, 1)
+                rnCounter-=1
+                currentlyAdding=false
+                target.remove()
+            }else{
+            console.log(targetID)
+            }
+        }
+        saveState()
+        //renderTaskList()
+    });
     
     //generateTaskId();
     //chkIfNtNumEx();

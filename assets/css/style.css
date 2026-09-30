@@ -172,19 +172,13 @@ width: fit-content
 .card-body{
   padding-top: 10px;
 }
-/* 
-#dne-list li {
-    border: 4px green solid !important;
+
+.card-hdr{
+    /* border: 2px solid white; */
+    max-width: 71%;
+    text-align: center;
+    justify-self: center;
 }
-
-#todo-list li {
-    border: 4px yellow solid !important;
-}
-
-#prg-list li {
-    border: 4px blue solid !important;
-} */
-
 
 .late {
   
