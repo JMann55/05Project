@@ -76,7 +76,7 @@ function generateTaskId(t) {
     do{
         ntNum = Math.floor(Math.random() * 900) + 100;
 
-        console.log(ntNum)
+        //console.log(ntNum)
     }while(chkIfNtNumEx(ntNum)==true)
     
     let tArray = []
@@ -161,8 +161,57 @@ function chkIfNtNumEx(num){
 
 
     return isIn
-    // let tickets = idArray.getItem(nextId.key())
+    // let tickets = ikjkli;o[p/8+9
+    // 98-dArray.getItem(nextId.key())
     // idArray.getItem(String(nextId.key()))
+}
+
+function shiftNoteNumbers(toBeDelTsk, deletedDivTarg){
+    let newNoteNum;
+    const targetNum = parseInt(toBeDelTsk.notenumber.split('# ')[1])
+    let targetInd;
+
+    for(let y=0; y<tasks.length; y++){
+       targetInd = tasks[y].notenumber.split('# ')[1]
+       if(targetNum<=targetInd){
+        tasks[y].notenumber = `Note# ${targetInd-1}`
+        idArray[y] = parseInt(tasks[y].notenumber.split("# ")[1])
+        nxtNt[y] = parseInt(tasks[y].notenumber.split("# ")[1])
+        
+        //get ul where note was deleted
+        //find card that are assigned after the 
+        // deleted card. find by note#
+        //for loop
+        
+                //get next div item
+                let nextNoteEl = deletedDivTarg.nextElementSibling
+                let oldNote;
+                let oldNoteNum;
+                if(nextNoteEl){
+                    oldNote = nextNoteEl.children[0].childNodes[0].childNodes[0].childNodes[0].innerText
+                    oldNoteNum = oldNote.split('# ')[1]
+                    newNoteNum = oldNoteNum - 1
+                    nextNoteEl.children[0].childNodes[0].childNodes[0].childNodes[0].innerText = `Note# ${newNoteNum}`
+                    deletedDivTarg = nextNoteEl
+                }
+
+       }
+       
+    }
+    //get index location of the inputted task
+
+    for(let x=targetInd; x<=tasks.length; x++){
+      
+        
+        // if(targetNum<=counter){
+        //     newNoteNum = targetNum-1
+        //     theTask.notenumber = `Note# ${newNoteNum}`
+        //     //update display throught html
+        // }
+    
+       console.log(x)
+    }
+
 }
 
 function clearForm(){
@@ -295,8 +344,7 @@ function appendCards(taskInMemory){
   });
 
     const $divBody = $('<div>', {
-       
-        class: 'card-body',
+        
     });
 
     let tskTitleField = $('input[id="taskTitle"]').val()
@@ -465,7 +513,7 @@ function createTaskCard(task) {
 
         console.log(new Date(tskDueDateField))
         //console.log(getDaysDifference(Date.parse(centRalTime), Date.parse(theCentRalTime)))
-        console.log(getDaysDifference(Date.parse(tskDueDateField)))
+        //console.log(getDaysDifference(Date.parse(tskDueDateField)))
         //console.log(Date.now())
 
         
@@ -616,10 +664,10 @@ function handleDrop(event, ui) {
 
     let targetEl = event.target
 
-    console.log(targetEl.getAttribute('taskState'))
+    //console.log(targetEl.getAttribute('taskState'))
 
     // Your code here
-    console.log(targetEl.children())
+    //console.log(targetEl.children())
     //find div element with 
     //h5 element
  
@@ -694,7 +742,7 @@ $(function () {
                 targetTask.taskState = "InProgress"
                 console.log("gotcha")
             }else{
-                console.log(targetID)
+                //console.log(targetID)
             }
         }
 
@@ -727,7 +775,7 @@ $(function () {
                 
                 console.log("gotcha")
             }else{
-                console.log(targetID)
+                //console.log(targetID)
             }
         }
 
@@ -757,7 +805,7 @@ $(function () {
                 targetTask.taskState = "Todo"
                 console.log("gotcha")
             }else{
-                console.log(targetID)
+                //console.log(targetID)
             }
         }
 
@@ -779,9 +827,12 @@ $(function () {
                 nxtNt.splice(tCnt, 1)
                 rnCounter-=1
                 currentlyAdding=false
+                shiftNoteNumbers(targetTask, target)
+
                 target.remove()
+
             }else{
-            console.log(targetID)
+                //console.log(targetID)
             }
         }
         saveState()
